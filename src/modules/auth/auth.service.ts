@@ -3,6 +3,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { GenerateTokenDto, LoginDto } from './auth.dto';
+import { StringValue } from 'ms'
 import { httpResponse } from '../../common/helpers/http-response';
 
 @Injectable()
@@ -35,13 +36,13 @@ export class AuthService {
         };
 
         const accessToken = this.jwtService.sign(payload, {
-            expiresIn: process.env.JWT_EXPIRES_IN,
-            secret: process.env.JWT_SECRET
+            expiresIn: process.env.JWT_EXPIRES_IN as StringValue,
+            secret: process.env.JWT_SECRET as string
         });
 
         const refreshToken = this.jwtService.sign(payload, {
-            expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
-            secret: process.env.JWT_REFRESH_SECRET
+            expiresIn: process.env.JWT_REFRESH_EXPIRES_IN as StringValue,
+            secret: process.env.JWT_REFRESH_SECRET as string
         });
 
         await this.prisma.user.update({
@@ -50,6 +51,15 @@ export class AuthService {
         });
 
         return httpResponse(true, { accessToken, refreshToken }, 'Connexion réussie', 200);
+    }
 
+    verifyToken(token: string): { sub: string, email: string, entreprise_id: string, nom: string, prenom: string } | null {
+        try {
+            return this.jwtService.verify(token, {
+                secret: process.env.JWT_SECRET as string
+            }) as { sub: string, email: string, entreprise_id: string, nom: string, prenom: string };
+        } catch (error) {
+            return null;
+        }
     }
 }

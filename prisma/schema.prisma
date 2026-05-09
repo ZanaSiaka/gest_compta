@@ -105,18 +105,26 @@ model User {
 }
 
 model Tiers {
-  tiers_id       String  @id @default(uuid())
-  code           String  @unique
+  tiers_id       String    @id @default(uuid())
+  code           String    @unique
   raison_sociale String
-  nif            String  @unique
-  rccm           String  @unique
+  nif            String    @unique
+  rccm           String    @unique
+  type           TypeTiers @default(CLIENT)
   adresse        String
   telephone      String
-  email          String  @unique
-  est_airsi      Boolean @default(false)
+  email          String    @unique
+  est_airsi      Boolean   @default(false)
 
   entreprise_id String
   entreprise    Entreprise @relation(fields: [entreprise_id], references: [entreprise_id], onDelete: Cascade)
+
+  created_at DateTime  @default(now())
+  created_by String
+  updated_at DateTime? @updatedAt
+  updated_by String?
+  deleted_at DateTime?
+  deleted_by String?
 }
 
 model Exercice {
@@ -145,6 +153,12 @@ enum FormeJurique {
   SCIC
   SCI
   SASU
+}
+
+enum TypeTiers {
+  CLIENT
+  PARTENAIRE
+  FOURNISSEUR
 }
 
 enum RegimeFiscal {
