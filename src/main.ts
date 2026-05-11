@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as bcrypt from 'bcrypt';
 import 'dotenv/config';
 
 async function bootstrap() {
@@ -37,5 +38,6 @@ async function bootstrap() {
   await app.listen(process.env.PORT as string);
   console.log(`✅ Server is running at http://localhost:${process.env.PORT}`);
   console.log(`📘 Swagger documentation available at http://localhost:${process.env.PORT as string}/api/docs`);
+
 }
 bootstrap();
