@@ -13,13 +13,166 @@ datasource db {
   provider = "postgresql"
 }
 
-model Test {
-  id   Int    @id @default(autoincrement())
-  name String
+model Entreprise {
+  entreprise_id    String       @id @default(uuid())
+  raison_sociale   String
+  nif              String       @unique
+  rccm             String       @unique
+  dfe              String       @unique /// Document de Fichier Electronique (à bien comprendre et à utiliser à bon escient)
+  forme_juridique  FormeJurique
+  regime_fiscal    RegimeFiscal
+  secteur_activite String
+  adresse          String
+  telephone        String
+  email            String       @unique
+  site_web         String?      @unique
+  logo             String? /// URL du logo de l'entreprise
+  est_active       Boolean      @default(true)
+
+  created_at DateTime  @default(now())
+  created_by String
+  updated_at DateTime? @updatedAt
+  updated_by String?
+  deleted_at DateTime?
+  deleted_by String?
+
+  users     User[]
+  roles     Role[]
+  tiers     Tiers[]
+  exercices Exercice[]
+}
+
+model Role {
+  role_id     String  @id @default(uuid())
+  nom         String  @unique
+  description String?
+
+  entreprise_id String
+  entreprise    Entreprise @relation(fields: [entreprise_id], references: [entreprise_id], onDelete: Cascade)
+
+  created_at DateTime  @default(now())
+  created_by String
+  updated_at DateTime? @updatedAt
+  updated_by String?
+  deleted_at DateTime?
+  deleted_by String?
+
+  permissions Permission[]
+  users       User[]
+}
+
+model Permission {
+  permission_id String  @id @default(uuid())
+  module        String
+  can_read      Boolean @default(false)
+  can_write     Boolean @default(false)
+  can_delete    Boolean @default(false)
+  can_update    Boolean @default(false)
+  can_validate  Boolean @default(false)
+  can_export    Boolean @default(false)
+
+  role_id String
+  role    Role   @relation(fields: [role_id], references: [role_id], onDelete: Restrict)
+
+  created_at DateTime  @default(now())
+  created_by String
+  updated_at DateTime? @updatedAt
+  updated_by String?
+  deleted_at DateTime?
+  deleted_by String?
 }
 
 model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  password String
+  user_id                String    @id @default(uuid())
+  nom                    String
+  prenom                 String
+  email                  String    @unique
+  password               String
+  est_actif              Boolean   @default(true)
+  tentatives_connexion   Int       @default(0)
+  compte_bloque          Boolean   @default(false)
+  derniere_connexion     DateTime? @default(now())
+  token_reset            String?   @unique
+  token_reset_expiration DateTime?
+
+  entreprise_id String
+  entreprise    Entreprise @relation(fields: [entreprise_id], references: [entreprise_id], onDelete: Cascade)
+  role_id       String
+  role          Role       @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
+
+  created_at DateTime  @default(now())
+  created_by String
+  updated_at DateTime? @updatedAt
+  updated_by String?
+  deleted_at DateTime?
+  deleted_by String?
+}
+
+model Tiers {
+  tiers_id       String    @id @default(uuid())
+  code           String    @unique
+  raison_sociale String
+  nif            String    @unique
+  rccm           String    @unique
+  type           TypeTiers @default(CLIENT)
+  adresse        String
+  telephone      String
+  email          String    @unique
+  est_airsi      Boolean   @default(false)
+
+  entreprise_id String
+  entreprise    Entreprise @relation(fields: [entreprise_id], references: [entreprise_id], onDelete: Cascade)
+
+  created_at DateTime  @default(now())
+  created_by String
+  updated_at DateTime? @updatedAt
+  updated_by String?
+  deleted_at DateTime?
+  deleted_by String?
+}
+
+model Exercice {
+  exercice_id     String         @id @default(uuid())
+  libelle         String
+  statut_exercice StatutExercice
+  date_debut      DateTime
+  date_fin        DateTime?
+  est_cloture     Boolean        @default(false)
+  cloture_date    DateTime?      @default(now())
+
+  entreprise_id String
+  cloture_par   String?
+  entreprise    Entreprise @relation(fields: [entreprise_id], references: [entreprise_id], onDelete: Cascade)
+}
+
+/////////////////////// Enums \\\\\\\\\\\\\\\\\\\\\\\
+enum FormeJurique {
+  SARL
+  SA
+  SAS
+  EURL
+  SNC
+  SCS
+  SCOP
+  SCIC
+  SCI
+  SASU
+}
+
+enum TypeTiers {
+  CLIENT
+  PARTENAIRE
+  FOURNISSEUR
+}
+
+enum RegimeFiscal {
+  IS
+  IR
+  CFP
+  RSI
+}
+
+enum StatutExercice {
+  OUVERT
+  CLOTURE
 }
