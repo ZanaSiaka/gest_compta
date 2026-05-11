@@ -50,13 +50,15 @@ model Role {
   entreprise_id String
   entreprise    Entreprise @relation(fields: [entreprise_id], references: [entreprise_id], onDelete: Cascade)
 
-  created_at  DateTime     @default(now())
-  created_by  String
-  updated_at  DateTime?    @updatedAt
-  updated_by  String?
-  deleted_at  DateTime?
-  deleted_by  String?
+  created_at DateTime  @default(now())
+  created_by String
+  updated_at DateTime? @updatedAt
+  updated_by String?
+  deleted_at DateTime?
+  deleted_by String?
+
   permissions Permission[]
+  users       User[]
 }
 
 model Permission {
@@ -70,7 +72,7 @@ model Permission {
   can_export    Boolean @default(false)
 
   role_id String
-  role    Role   @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
+  role    Role   @relation(fields: [role_id], references: [role_id], onDelete: Restrict)
 
   created_at DateTime  @default(now())
   created_by String
@@ -95,6 +97,8 @@ model User {
 
   entreprise_id String
   entreprise    Entreprise @relation(fields: [entreprise_id], references: [entreprise_id], onDelete: Cascade)
+  role_id       String
+  role          Role       @relation(fields: [role_id], references: [role_id], onDelete: Cascade)
 
   created_at DateTime  @default(now())
   created_by String

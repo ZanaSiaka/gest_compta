@@ -36,7 +36,7 @@ export class AuthGuard implements CanActivate {
         email: true,
         est_actif: true,
         entreprise: true,
-        // role: true
+        role: true
       }
     })
 
