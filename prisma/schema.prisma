@@ -44,7 +44,7 @@ model Entreprise {
 
 model Role {
   role_id     String  @id @default(uuid())
-  nom         String  @unique
+  nom         String
   description String?
 
   entreprise_id String
@@ -138,7 +138,7 @@ model Exercice {
   date_debut      DateTime
   date_fin        DateTime?
   est_cloture     Boolean        @default(false)
-  cloture_date    DateTime?      @default(now())
+  cloture_date    DateTime?
 
   entreprise_id String
   cloture_par   String?

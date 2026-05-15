@@ -11,7 +11,7 @@ export class UserController {
   @Get('me')
   @UseGuards(AuthGuard)
   @ApiBearerAuth()
-  getCurrentUser(@CurrentUser() user: object | null) {
+  getCurrentUser(@CurrentUser() user: object) {
     return user
   }
 }
