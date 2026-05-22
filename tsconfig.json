@@ -2,6 +2,11 @@
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
+    "types": [
+      "node",
+      "express",
+      "multer"
+    ],
     "esModuleInterop": true,
     "isolatedModules": true,
     "declaration": true,

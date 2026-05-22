@@ -4,16 +4,20 @@ import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { StringValue } from 'ms'
 import { PrismaModule } from '../../prisma/prisma.module';
+import { MailModule } from '../../mail/mail.module';
 
 @Module({
 
   imports: [
-    JwtModule.register({
+    JwtModule.registerAsync({
       global: true,
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN as StringValue },
+      useFactory: () => ({
+        secret: process.env.JWT_SECRET as string,
+        signOptions: { expiresIn: process.env.JWT_EXPIRES_IN as StringValue },
+      })
     }),
-    PrismaModule
+    PrismaModule,
+    MailModule
   ],
 
   controllers: [AuthController],

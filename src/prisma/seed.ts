@@ -21,7 +21,7 @@ async function main() {
             rccm: 'RCC-2024-001',
             dfe: 'DFE-2024-001',
             forme_juridique: 'SARL',
-            regime_fiscal: 'IS',
+            regime_fiscal: 'RNI',
             secteur_activite: 'Technologie',
             adresse: '123 Rue de la Technologie, Abidjan',
             telephone: '+225 01 23 45 67 89',

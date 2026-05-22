@@ -1,5 +1,4 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { Observable } from 'rxjs';
 import { AuthService } from '../../modules/auth/auth.service';
 import { PrismaService } from '../../prisma/prisma.service';
 import { Request } from 'express';
@@ -35,14 +34,16 @@ export class AuthGuard implements CanActivate {
         prenom: true,
         email: true,
         est_actif: true,
+        compte_bloque: true,
         entreprise: true,
         role: true
       }
     })
 
-    if (!user) {
-      return false
-    }
+    if (!user) return false;
+    if (!user.est_actif) return false;
+    if (user.compte_bloque) return false;
+    if (!user.entreprise.est_active) return false;
 
     request['user'] = user;
     return true;
