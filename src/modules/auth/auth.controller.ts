@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { ForgotPasswordDto, LoginDto, RefreshTokenDto, ResetPasswordDto } from './auth.dto';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ForgotPasswordDto, LoginDto, RefreshTokenDto, ResetPasswordDto, UnlockConfirmDto, UnlockDemandeDto } from './auth.dto';
+import { AuthGuard } from '../../common/guards/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -57,6 +58,38 @@ export class AuthController {
   @ApiResponse({ status: '5XX' })
   async resetPassword(@Body() body: ResetPasswordDto) {
     return await this.authService.resetPassword(body);
+  }
+
+  @Post('unlock-account')
+  @ApiOperation({ summary: 'Unlock accound' })
+  @ApiBody({ type: UnlockDemandeDto })
+  @ApiResponse({ status: '2XX' })
+  @ApiResponse({ status: '4XX' })
+  @ApiResponse({ status: '5XX' })
+  async unlockDemande(@Body() body: UnlockDemandeDto) {
+    return await this.authService.unlockDemande(body.email);
+  }
+
+  @Post('unlock-account/confirm')
+  @ApiOperation({ summary: 'Confirm unlock password' })
+  @ApiBody({ type: UnlockConfirmDto })
+  @ApiResponse({ status: '2XX' })
+  @ApiResponse({ status: '4XX' })
+  @ApiResponse({ status: '5XX' })
+  async unlockConfirm(@Body() body: UnlockConfirmDto) {
+    return await this.authService.unlockConfirm(body.token);
+  }
+
+  @Post('logout')
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Logout' })
+  @ApiBody({ type: RefreshTokenDto })
+  @ApiResponse({ status: '2XX' })
+  @ApiResponse({ status: '4XX' })
+  @ApiResponse({ status: '5XX' })
+  async logout(@Body() body: RefreshTokenDto) {
+    return await this.authService.logout(body.refresh_token);
   }
 
 }

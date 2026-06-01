@@ -163,7 +163,7 @@ export class AuthService {
 
             const user = await this.prisma.user.findUnique({ where: { email } });
 
-            if (!user) return httpResponse(true, null, 'Un lien a été envoyé sur votre mail', 200);
+            if (!user) return httpResponse(true, null, 'Un lien a été envoyé sur votre email', 200);
             if (user.compte_bloque || !user.est_actif) return httpResponse(false, null, 'Veuillez débloquer votre compte avant :)!', 401);
 
             const token = crypto.randomBytes(32).toString('hex');
@@ -217,6 +217,81 @@ export class AuthService {
             console.error('An error occured', error);
             return httpResponse(false, null, 'An error occured during reset password', 500);
         }
+    }
+
+    async unlockDemande(email: string) {
+        try {
+            const user = await this.prisma.user.findUnique({ where: { email }, include: { role: true } });
+
+            if (!user) return httpResponse(true, null, 'Un lien pour debloquer votre profil vous a été envoyé pour debloquer votre profil', 200);
+
+            if (!user.compte_bloque) return httpResponse(false, null, 'Votre compte n\'est pas bloqué', 400);
+
+            if (user.role.nom !== 'ADMIN') return httpResponse(false, null, 'Veuillez contacter votre administrateur pour débloquer votre compte', 403);
+
+
+            if (!user.est_actif) return httpResponse(false, null, 'votre compte n\'est pas actif', 401);
+            const token = crypto.randomBytes(32).toString('hex');
+
+            const expiration = new Date();
+            expiration.setHours(expiration.getHours() + 1);
+
+            await this.prisma.user.update({
+                where: { user_id: user.user_id },
+                data: {
+                    token_reset: token,
+                    token_reset_expiration: expiration
+                }
+            });
+
+            await this.mail.unlockMail(user.email, user.nom, token);
+            return httpResponse(true, null, 'Un lien pour debloquer votre profil vous a été envoyé pour debloquer votre profil', 200)
+
+        } catch (error) {
+            console.error('An errorr occured', error);
+            return httpResponse(false, null, 'An error occured during unlock account demande', 500);
+        }
+    }
+
+    async unlockConfirm(token: string) {
+
+        try {
+
+            const user = await this.prisma.user.findUnique({ where: { token_reset: token } });
+
+            if (!user) return httpResponse(false, null, 'Token invalide', 400);
+            if (!user.token_reset_expiration || user.token_reset_expiration < new Date()) return httpResponse(false, null, 'Token expiré, faites une nouvelle demande', 400);
+
+            await this.prisma.user.update({
+                where: { user_id: user.user_id },
+                data: {
+                    token_reset: null,
+                    token_reset_expiration: null,
+                    compte_bloque: false,
+                    tentatives_connexion: 0
+                }
+            });
+
+            return httpResponse(true, null, 'Compte débloqué avec succès', 200);
+
+        } catch (error) {
+            console.error('An error occured', error);
+            return httpResponse(false, null, 'An error occured during unlocking confirm', 500);
+        }
+    }
+
+    async logout(refreshToken: string) {
+        const hash = crypto.createHash('sha256').update(refreshToken).digest('hex');
+        const stored = await this.prisma.refreshToken.findUnique({ where: { token: hash } });
+
+        if (!stored || stored.revoked) return httpResponse(false, null, 'Refresh token invalide', 400);
+
+        await this.prisma.refreshToken.update({
+            where: { token: hash },
+            data: { revoked: true, revoked_at: new Date() }
+        });
+
+        return httpResponse(true, null, 'Déconnexion réussie', 200);
     }
 
     verifyToken(token: string): { sub: string, email: string, entreprise_id: string, nom: string, prenom: string } | null {

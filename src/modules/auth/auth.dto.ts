@@ -79,6 +79,7 @@ export class ResetPasswordDto {
     @IsString()
     @IsNotEmpty()
     @MinLength(8, { message: 'Le mot de passe doit avoir au moins 8 caractères' })
+    @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, { message: 'Doit contenir au moins une majuscule, une minuscule et un chiffre' })
     new_password!: string;
 
     @ApiProperty({ example: 'Admin@1234' })
@@ -86,4 +87,18 @@ export class ResetPasswordDto {
     @IsNotEmpty()
     @Validate(MatchPasswords)
     confirm_password!: string;
+}
+
+export class UnlockDemandeDto {
+    @ApiProperty({ example: 'zana.siaka@nlt.com', required: true })
+    @IsEmail()
+    @IsNotEmpty()
+    email!: string;
+}
+
+export class UnlockConfirmDto {
+    @ApiProperty({ required: true })
+    @IsString()
+    @IsNotEmpty()
+    token!: string;
 }
