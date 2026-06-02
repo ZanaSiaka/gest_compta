@@ -20,6 +20,12 @@ export class R2Service {
             throw new Error("No file provided");
         }
 
+        const MAX_SIZE = 2 * 1024 * 1024; //2 MB
+
+        if (file.size > MAX_SIZE) {
+            throw new Error('Image size must not exceed 5 MB');
+        }
+
         const allowedMimeTypes = [
             'image/png',
             'image/jpg',
@@ -50,6 +56,9 @@ export class R2Service {
 
     async deleteImage(url: string): Promise<{ success: boolean }> {
         const key = this.extractKey(url);
+
+        console.log('Bucket:', process.env.CLOUDFLARE_BUCKET_NAME);
+        console.log('Account ID:', process.env.CLOUDFLARE_ACCOUNT_ID);
 
         await this.r2.send(
             new DeleteObjectCommand({

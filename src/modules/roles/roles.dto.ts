@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateRoleDto {
     @ApiProperty({ example: 'ADMIN', description: 'The name of the role', required: true })
@@ -23,4 +23,46 @@ export class UpdateRoleDto {
     @IsString()
     @IsOptional()
     description?: string;
+}
+
+export class PermissionsDto {
+    @ApiProperty({ example: 'TIERS' })
+    @IsString()
+    @IsNotEmpty()
+    module!: string;
+
+    @ApiProperty({ default: false })
+    @IsBoolean()
+    @IsOptional()
+    can_read?: boolean = false;
+
+    @ApiProperty({ default: false })
+    @IsBoolean()
+    @IsOptional()
+    can_write?: boolean = false;
+
+    @ApiProperty({ default: false })
+    @IsBoolean()
+    @IsOptional()
+    can_delete?: boolean = false;
+
+    @ApiProperty({ default: false })
+    @IsBoolean()
+    @IsOptional()
+    can_update?: boolean = false;
+
+    @ApiProperty({ default: false })
+    @IsBoolean()
+    @IsOptional()
+    can_validate?: boolean = false;
+
+    @ApiProperty({ default: false })
+    @IsBoolean()
+    @IsOptional()
+    can_export?: boolean = false;
+}
+
+export class UpdatePermissionsDto {
+    @ApiProperty({ type: [PermissionsDto] })
+    permissions!: PermissionsDto[];
 }

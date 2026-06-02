@@ -6,6 +6,9 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 import { MailModule } from './mail/mail.module';
 import { R2Module } from './r2/r2.module';
+import { RolesModule } from './modules/roles/roles.module';
+import { ProfileModule } from './modules/profile/profile.module';
+import { TiersModule } from './modules/tiers/tiers.module';
 
 @Module({
   imports: [
@@ -13,7 +16,10 @@ import { R2Module } from './r2/r2.module';
     AuthModule,
     UserModule,
     MailModule,
-    R2Module
+    R2Module,
+    RolesModule,
+    ProfileModule,
+    TiersModule
   ],
   controllers: [AppController],
   providers: [AppService],

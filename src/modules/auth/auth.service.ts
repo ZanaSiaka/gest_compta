@@ -164,6 +164,7 @@ export class AuthService {
             const user = await this.prisma.user.findUnique({ where: { email } });
 
             if (!user) return httpResponse(true, null, 'Un lien a été envoyé sur votre email', 200);
+
             if (user.compte_bloque || !user.est_actif) return httpResponse(false, null, 'Veuillez débloquer votre compte avant :)!', 401);
 
             const token = crypto.randomBytes(32).toString('hex');

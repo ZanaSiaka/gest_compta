@@ -63,4 +63,27 @@ export class MailService {
 
     }
 
+    async sendWelcomeEmail(to: string, nom: string, password: string) {
+
+        try {
+            const res = await this.resend.emails.send({
+                from: 'onboarding@resend.dev',
+                to: 'zanacoul210@gmail.com',
+                subject: 'Bienvenue sur notre plateforme',
+                html: `
+                    <h2>Bonjour Mlle/Mme/M ${nom} ! </h2>
+                    <p>Bienvenue sur notre plateforme ! Voici votre mot de passe temporaire :</p>
+                    <p><strong>${password}</strong></p>
+                    <p>Veuillez le changer dès votre première connexion.</p>
+                `
+            });
+            if (res.error) throw new Error(res.error.message);
+            console.log('Email de bienvenue envoyé avec succès');
+        } catch (error) {
+            console.error("Error when email sending", error);
+            throw error;
+        }
+
+    }
+
 }
