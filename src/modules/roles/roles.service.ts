@@ -3,6 +3,7 @@ import { CreateRoleDto, UpdatePermissionsDto, UpdateRoleDto } from './roles.dto'
 import { PrismaService } from '../../prisma/prisma.service';
 import { httpResponse, httpResponsePaginated } from '../../common/helpers/http-response';
 import { PermissionService } from '../../common/services/permission.service';
+import { Module } from '../../../generated/prisma/enums';
 
 @Injectable()
 export class RolesService {
@@ -178,9 +179,9 @@ export class RolesService {
 
             await this.prisma.$transaction(
                 body.permissions.map(p => this.prisma.permission.upsert({
-                    where: { role_id_module: { role_id: role_id_param, module: p.module } },
+                    where: { role_id_module: { role_id: role_id_param, module: p.module as Module } },
                     create: {
-                        module: p.module,
+                        module: p.module as Module,
                         can_read: p.can_read,
                         can_write: p.can_write,
                         can_delete: p.can_delete,

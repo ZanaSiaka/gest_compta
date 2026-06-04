@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
+import { Module } from "../../../generated/prisma/enums";
 
 export type Permission = 'can_read' | 'can_write' | 'can_delete' | 'can_update' | 'can_validate' | 'can_export';
 
@@ -7,7 +8,7 @@ export type Permission = 'can_read' | 'can_write' | 'can_delete' | 'can_update' 
 export class PermissionService {
     constructor(private readonly prisma: PrismaService) { }
 
-    async hasPermission(role_id: string, module: string, action: Permission): Promise<boolean> {
+    async hasPermission(role_id: string, module: Module, action: Permission): Promise<boolean> {
 
         const role = await this.prisma.role.findUnique({
             where: { role_id },

@@ -1,5 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsBoolean, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
+import { Module } from "../../../generated/prisma/enums";
+import { Type } from "class-transformer";
 
 export class CreateRoleDto {
     @ApiProperty({ example: 'ADMIN', description: 'The name of the role', required: true })
@@ -27,9 +29,9 @@ export class UpdateRoleDto {
 
 export class PermissionsDto {
     @ApiProperty({ example: 'TIERS' })
-    @IsString()
+    @IsEnum(Module)
     @IsNotEmpty()
-    module!: string;
+    module!: Module;
 
     @ApiProperty({ default: false })
     @IsBoolean()
@@ -64,5 +66,9 @@ export class PermissionsDto {
 
 export class UpdatePermissionsDto {
     @ApiProperty({ type: [PermissionsDto] })
+    @ValidateNested({ each: true })
+    @Type(() => PermissionsDto)
+    @IsArray()
+    @IsNotEmpty()
     permissions!: PermissionsDto[];
 }

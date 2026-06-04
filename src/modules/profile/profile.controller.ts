@@ -63,4 +63,13 @@ export class ProfileController {
     return await this.profileService.updatePhoto(user.user_id, file)
   }
 
+  @Get('permissions')
+  @ApiOperation({ summary: 'Get current user permissions' })
+  @ApiResponse({ status: '2XX' })
+  @ApiResponse({ status: '4XX' })
+  @ApiResponse({ status: '5XX' })
+  async getPermissions(@CurrentUser() user: { role: { role_id: string, nom: string } }) {
+    return await this.profileService.getPermission(user.role.role_id, user.role.nom);
+  }
+
 }

@@ -118,7 +118,35 @@ export class ProfileService {
 
         } catch (error) {
             console.error('Error updating photo', error);
-            return httpResponse(false, null, 'An occured while updating the photo', 500);
+            return httpResponse(false, null, 'An error occured while updating the photo', 500);
+        }
+
+    }
+
+    async getPermission(role_id: string, role_nom: string) {
+
+        try {
+
+            if (role_nom === 'ADMIN') return httpResponse(true, { is_admin: true, permissions: [] }, 'This is an admin of organization', 200);
+
+            const permissions = await this.prisma.permission.findMany({
+                where: { role_id },
+                select: {
+                    module: true,
+                    can_delete: true,
+                    can_export: true,
+                    can_read: true,
+                    can_update: true,
+                    can_validate: true,
+                    can_write: true
+                }
+            });
+
+            return httpResponse(true, { is_admin: false, permissions }, 'Permissions retrieved successfully', 200);
+
+        } catch (error) {
+            console.error('Error fetching permissions', error);
+            return httpResponse(false, null, 'An error occured while getting connected user permissions', 500);
         }
 
     }

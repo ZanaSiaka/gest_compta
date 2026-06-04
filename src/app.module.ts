@@ -9,9 +9,12 @@ import { R2Module } from './r2/r2.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { TiersModule } from './modules/tiers/tiers.module';
+import { ExerciceModule } from './modules/exercice/exercice.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     PrismaModule,
     AuthModule,
     UserModule,
@@ -19,7 +22,8 @@ import { TiersModule } from './modules/tiers/tiers.module';
     R2Module,
     RolesModule,
     ProfileModule,
-    TiersModule
+    TiersModule,
+    ExerciceModule
   ],
   controllers: [AppController],
   providers: [AppService],

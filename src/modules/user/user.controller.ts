@@ -19,7 +19,7 @@ export class UserController {
   @ApiResponse({ status: '4XX' })
   @ApiResponse({ status: '5XX' })
   async getAllUsers(@CurrentUser() user: { entreprise: { entreprise_id: string }, role: { role_id: string } }, @Query('page') page: number, @Query('limit') limit: number) {
-    return await this.userService.getAllUsers(user.entreprise.entreprise_id, user.role.role_id, page, limit)
+    return await this.userService.getAllUsers(user.entreprise.entreprise_id, user.role.role_id, page ? Number(page) : 1, limit ? Number(limit) : 10)
   }
 
   @Post()
